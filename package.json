@@ -1,0 +1,24 @@
+{
+  "name": "md-to-pdf-cli",
+  "version": "1.0.0",
+  "description": "High-fidelity Markdown to PDF converter with KaTeX vector math, Mermaid diagrams, and CJK typography support.",
+  "main": "md_to_pdf.js",
+  "bin": {
+    "md2pdf": "./md2pdf.cmd"
+  },
+  "scripts": {
+    "test": "node md_to_pdf.js"
+  },
+  "keywords": [
+    "markdown",
+    "pdf",
+    "katex",
+    "latex",
+    "math",
+    "mermaid",
+    "diagram",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT"
+}
