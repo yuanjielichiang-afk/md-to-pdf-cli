@@ -48,9 +48,14 @@
 1. 將本專案所在路徑（例如 `C:\PROJECT\md-to-pdf-cli`）加入 Windows 使用者環境變數的 `PATH` 中。
 2. 重新開啟命令提示字元或 PowerShell，即可在任何目錄下執行 `md2pdf` 指令。
 
-### 方式 B：一鍵加入 Windows 右鍵「傳送到」選單
+### 方式 B：一鍵加入 Windows 右鍵「傳送到」選單（免管理員權限）
 1. 雙擊執行目錄下的 [`install_sendto.bat`](file:///C:/PROJECT/md-to-pdf-cli/install_sendto.bat)。
-2. 往後在檔案總管中，於任何 `.md` 檔案上按 **滑鼠右鍵 ->「傳送到」->「Markdown 轉 PDF」** 即可快速轉檔！
+2. 往後在檔案總管中，於任何 `.md` 檔案上按 **滑鼠右鍵 ->「傳送到」->「Markdown to PDF」** 即可快速轉檔！
+
+### 方式 C：直接複製 `convert_to_pdf.bat` 到目標資料夾（零設定、相容舊習慣）
+1. 將本目錄中的 [`convert_to_pdf.bat`](file:///C:/PROJECT/md-to-pdf-cli/convert_to_pdf.bat) 複製到任何含有 Markdown 的專案資料夾。
+2. **無需修改該批次檔任何內容**，它具備自動尋路機制，會自動連動核心程式轉換該資料夾中的文件。
+3. 詳細說明請參閱 [使用說明手冊 (USAGE.md)](file:///C:/PROJECT/md-to-pdf-cli/USAGE.md)。
 
 ---
 
@@ -59,21 +64,26 @@
 ### 1. 轉換當前目錄下的所有 Markdown 檔案（智慧增量）
 ```bash
 md2pdf
+# 或直接雙擊資料夾內的 convert_to_pdf.bat
 ```
 > 若目標 PDF 已存在且為最新版本，將自動略過。
 
 ### 2. 強制重新編譯目錄下的所有檔案
 ```bash
 md2pdf --force
+# 或
+convert_to_pdf.bat --force
 ```
 
 ### 3. 指定單一檔案或多個檔案
 ```bash
 # 轉換單一檔案
 md2pdf "開發過程2.md"
+convert_to_pdf.bat "開發過程2.md"
 
 # 一次指定多個檔案
 md2pdf chap1.md chap2.md "US7995859_MD核實報告.md"
+convert_to_pdf.bat chap1.md chap2.md
 ```
 
 ### 4. 批次檔模式

@@ -1,6 +1,6 @@
 node_modules/
 *.temp.html
 *.temp.md
-*_fixed.pdf
+*.pdf
 .DS_Store
 Thumbs.db
