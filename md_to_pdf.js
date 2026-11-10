@@ -116,6 +116,113 @@ function cleanMathFormula(f) {
     return res;
 }
 
+// Auto-heal broken Markdown tables where cells containing <br> were split across lines or blank lines
+function repairBrokenTables(content) {
+    const lines = content.split(/\r?\n/);
+    const result = [];
+    let inTable = false;
+    let pendingRow = '';
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        // Check for table header separator like | --- | --- |
+        if (trimmed.match(/^\|?(\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?$/)) {
+            inTable = true;
+            if (pendingRow) {
+                result.push(pendingRow);
+                pendingRow = '';
+            }
+            result.push(line);
+            continue;
+        }
+
+        // If we are currently accumulating a split table row
+        if (pendingRow) {
+            if (trimmed === '') {
+                // Empty line inside a broken table row: check if next non-empty line continues the row
+                let hasContinuation = false;
+                for (let j = i + 1; j < lines.length && j < i + 5; j++) {
+                    const nextTrimmed = lines[j].trim();
+                    if (!nextTrimmed) continue;
+                    if (nextTrimmed.endsWith('|') || nextTrimmed.includes('|') || nextTrimmed.startsWith('<br>')) {
+                        hasContinuation = true;
+                    }
+                    break;
+                }
+                if (hasContinuation) {
+                    continue; // Skip the blank line
+                } else {
+                    // Not a continuation, flush pending row
+                    result.push(pendingRow);
+                    pendingRow = '';
+                    inTable = false;
+                    result.push(line);
+                    continue;
+                }
+            }
+
+            // Clean up leading <br> if pendingRow already ended with <br>
+            let appendPart = trimmed;
+            if (pendingRow.endsWith('<br>') || pendingRow.endsWith('<br/>') || pendingRow.endsWith('<br />')) {
+                appendPart = appendPart.replace(/^(?:<br\s*\/?>\s*)+/i, '');
+            }
+
+            pendingRow += ' ' + appendPart;
+
+            // Check if row is complete (ends with |)
+            if (pendingRow.trim().endsWith('|')) {
+                result.push(pendingRow);
+                pendingRow = '';
+            }
+            continue;
+        }
+
+        // Check if this line is in a table and broken
+        if (inTable) {
+            if (trimmed.startsWith('|')) {
+                // If line does not end with | or ends with dangling <br>
+                if (!trimmed.endsWith('|') || trimmed.endsWith('<br>') || trimmed.endsWith('<br/>') || trimmed.endsWith('<br />')) {
+                    pendingRow = line;
+                    continue;
+                } else {
+                    result.push(line);
+                    continue;
+                }
+            } else if (trimmed === '') {
+                // Check if the table continues after this blank line
+                let nextIsTable = false;
+                for (let j = i + 1; j < lines.length; j++) {
+                    const nextTrimmed = lines[j].trim();
+                    if (!nextTrimmed) continue;
+                    if (nextTrimmed.startsWith('|')) {
+                        nextIsTable = true;
+                    }
+                    break;
+                }
+                if (!nextIsTable) {
+                    inTable = false;
+                }
+                result.push(line);
+                continue;
+            } else {
+                inTable = false;
+                result.push(line);
+                continue;
+            }
+        }
+
+        result.push(line);
+    }
+
+    if (pendingRow) {
+        result.push(pendingRow);
+    }
+
+    return result.join('\n');
+}
+
 function processAndRenderMarkdown(content) {
     // 0. If pure ASCII diagram
     const hasBoxChars = /[┌┐└┘├┤┬┴┼│─═▲▼◄►]/.test(content);
@@ -131,6 +238,9 @@ function processAndRenderMarkdown(content) {
         codeBlocks.push(match);
         return `\n\nFENCEDCODEBLOCKPLACEHOLDER${id}XYZ\n\n`;
     });
+
+    // 1.5. Auto-heal broken Markdown tables before processing formulas
+    content = repairBrokenTables(content);
 
     const mathBlocks = [];
     const katexOptsDisplay = { displayMode: true, throwOnError: false, strict: 'ignore', output: 'html' };
