@@ -477,8 +477,8 @@ pre {
 }
 
 .mermaid svg {
-    max-width: 100% !important;
-    height: auto !important;
+    display: inline-block;
+    height: auto;
 }
 
 img {
@@ -495,8 +495,8 @@ p > img, div > img {
 }
 
 svg {
-    max-width: 100% !important;
-    height: auto !important;
+    max-width: 100%;
+    height: auto;
 }
 </style>
 </head>
