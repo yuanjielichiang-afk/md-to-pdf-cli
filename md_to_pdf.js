@@ -480,6 +480,24 @@ pre {
     max-width: 100% !important;
     height: auto !important;
 }
+
+img {
+    max-width: 100% !important;
+    max-height: 230mm;
+    height: auto !important;
+    page-break-inside: avoid;
+    box-sizing: border-box;
+}
+
+p > img, div > img {
+    display: block;
+    margin: 16px auto;
+}
+
+svg {
+    max-width: 100% !important;
+    height: auto !important;
+}
 </style>
 </head>
 <body>
