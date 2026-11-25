@@ -236,7 +236,7 @@ function processAndRenderMarkdown(content) {
     content = content.replace(/(```[\s\S]*?```|~~~[\s\S]*?~~~)/g, match => {
         const id = codeBlocks.length;
         codeBlocks.push(match);
-        return `\n\nFENCEDCODEBLOCKPLACEHOLDER${id}XYZ\n\n`;
+        return `FENCEDCODEBLOCKPLACEHOLDER${id}XYZ`;
     });
 
     // 1.5. Auto-heal broken Markdown tables before processing formulas
